@@ -1,14 +1,35 @@
--- Problem 1: Retrieve all products in the Sports category
--- Write an SQL query to retrieve all products in a specific category.
+#Problem 1
+#creating a database
+create database shopify;
+use shopify;
 
--- Problem 2: Retrieve the total number of orders for each user
--- Write an SQL query to retrieve the total number of orders for each user.
--- The result should include the user ID, username, and the total number of orders.
+select * from product_data;
+select * from category_data;
+#making foreign keys to link 2 tables
+alter table product_data add primary key (product_id);
 
--- Problem 3: Retrieve the average rating for each product
--- Write an SQL query to retrieve the average rating for each product.
--- The result should include the product ID, product name, and the average rating.
+alter table category_data add primary key (category_id);
+alter table product_data add constraint category_id foreign key(category_id) references category_data(category_id);
 
--- Problem 4: Retrieve the top 5 users with the highest total amount spent on orders
--- Write an SQL query to retrieve the top 5 users with the highest total amount spent on orders.
--- The result should include the user ID, username, and the total amount spent.
+#producing the result
+select * from product_data left join category_data on product_data.category_id = category_data.category_id where product_data.category_id = 8;
+
+#Problem 2
+
+alter table user_data add primary key (user_id);
+alter table order_data add primary key (order_id);
+
+alter table order_data add constraint user_id foreign key(user_id) references user_data(user_id);
+
+select * from order_data left join user_data on order_data.user_id = user_data.user_id;
+
+SELECT user_data.*, order_data.*, COUNT(*) OVER (PARTITION BY order_data.order_id) AS total_count
+FROM order_data
+LEFT JOIN user_data ON order_data.user_id = user_data.user_id;
+
+#Problem 4
+SELECT order_data.*, user_data.*
+FROM order_data
+LEFT JOIN user_data ON order_data.user_id = user_data.user_id
+ORDER BY order_data.total_amount DESC
+LIMIT 5;
